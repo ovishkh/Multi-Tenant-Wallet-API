@@ -120,12 +120,20 @@ pytest wallets/tests/ --html=test_report.html --self-contained-html --junitxml=t
 ## Project Structure
 ```text
 Multi-Tenant-Wallet-API/
-├── README.md               # You are here
-├── docker-compose.yml      # Local Postgres infrastructure
-├── manage.py
+├── .github/                # GitHub Actions Workflows (CI pipeline)
+├── docs/                   # Original assessment document
+├── .flake8                 # Linter configuration
+├── .gitignore              # Git ignore patterns
+├── .pre-commit-config.yaml # Pre-commit hook configurations
+├── Dockerfile              # Docker configuration for API
+├── docker-compose.yml      # Local Postgres & API infrastructure
+├── LICENSE                 # MIT License
+├── Makefile                # Shortcut commands (e.g., make test, make up)
+├── manage.py               # Django execution script
 ├── pytest.ini              # Pytest configuration
-├── run_manual_tests.py     # End-to-end API lifecycle script
-├── test_report.html        # Generated test output
+├── requirements.txt        # Python dependencies
+├── run_manual_tests.py     # End-to-end API lifecycle manual test script
+├── README.md               # You are here
 ├── config/                 # Django project config & routing
 │   ├── settings.py
 │   └── urls.py
@@ -135,6 +143,7 @@ Multi-Tenant-Wallet-API/
     ├── serializers.py      # DRF serialization
     ├── auth.py             # Custom X-Tenant-ID authentication
     ├── urls.py             # Router endpoints
+    ├── admin.py            # Django Admin registrations
     └── tests/              # Comprehensive test suite
         ├── test_api.py          # API & Idempotency tests
         ├── test_concurrency.py  # Threaded race-condition tests
