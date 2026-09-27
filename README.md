@@ -43,7 +43,7 @@ Multi-currency support would require tracking the `currency_code` (ISO 4217) on 
 ## Setup & Run Locally
 
 ### Prerequisites
-- Python 3.10+
+- Python 3.13+
 - PostgreSQL (Highly Recommended to enforce row-level locking via `select_for_update`)
 - Docker (Optional, to run PostgreSQL easily)
 
