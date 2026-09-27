@@ -5,15 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('wallets', '0001_initial'),
+        ("wallets", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='tenant',
-            name='api_key',
-            field=models.CharField(db_index=True, default=wallets.models.generate_api_key, max_length=255, unique=True),
+            model_name="tenant",
+            name="api_key",
+            field=models.CharField(
+                db_index=True,
+                default=wallets.models.generate_api_key,
+                max_length=255,
+                unique=True,
+            ),
         ),
     ]
