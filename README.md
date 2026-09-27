@@ -19,37 +19,37 @@ A highly scalable, secure, and robust multi-tenant wallet and ledger service bui
 As the system scales to millions of users, several initial assumptions and tradeoffs will need to be evolved. Below are the tradeoffs made for this V1, alongside the strategy to tackle them in V2.
 
 ### 1. The Wallet Balance Cache Bottleneck
-#### ⚠️ The Tradeoff:
+#### The Tradeoff:
 Calculating balances on-the-fly by summing `Transaction` rows is too slow. We currently maintain a `balance` Decimal field on the `Wallet` and update it atomically during every transaction.
 
-#### 🚀 How to Scale It (V2):
+#### How to Scale It (V2):
 Under extreme write-heavy workloads (thousands of TPS to a single wallet), locking the `Wallet` row creates a bottleneck. We would tackle this by moving to a **CQRS (Command Query Responsibility Segregation)** architecture. We would append `Transactions` to an event queue (like Kafka) without locking the wallet, and asynchronously update the balance cache. Clients would read from a Redis cache that guarantees eventual consistency.
 
 ---
 
 ### 2. Idempotency Storage
-#### ⚠️ The Tradeoff:
+#### The Tradeoff:
 We use a separate `IdempotencyKey` model to store API responses rather than piggybacking off the `Transaction` table. This allows us to cleanly handle retries for requests that fail *expectedly* (e.g., returning a cached `400 Insufficient Funds` without hitting the business logic again).
 
-#### 🚀 How to Scale It (V2):
+#### How to Scale It (V2):
 PostgreSQL will eventually bloat with stale idempotency keys. We would tackle this by migrating the Idempotency store to **Redis** with a strict TTL (Time To Live) of 24-48 hours.
 
 ---
 
 ### 3. Transfer Deadlocks
-#### ⚠️ The Tradeoff:
+#### The Tradeoff:
 When transferring money between two wallets, we lock *both* wallets simultaneously in a deterministic order (`order_by('id')`) to absolutely prevent deadlocks in high concurrency environments.
 
-#### 🚀 How to Scale It (V2):
+#### How to Scale It (V2):
 While deterministic locking prevents deadlocks, it still holds locks across multiple rows. In a distributed, microservice environment (or across sharded databases), we would implement the **Saga Pattern** or **Two-Phase Commit (2PC)**. The transfer would be broken into two separate local transactions (Debit Wallet A -> Message Broker -> Credit Wallet B) with compensation logic if step 2 fails.
 
 ---
 
 ### 4. Currency Handling
-#### ⚠️ The Tradeoff:
+#### The Tradeoff:
 The system currently assumes a single implicit currency (or uses Integer minor units / Decimal types) as specified.
 
-#### 🚀 How to Scale It (V2):
+#### How to Scale It (V2):
 Multi-currency support would require tracking the `currency_code` (ISO 4217) on both the `Wallet` and `Transaction` levels, and implementing exchange-rate oracles before cross-currency transfers are authorized.
 
 
